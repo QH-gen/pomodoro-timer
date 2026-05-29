@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useTimer } from '../composables/useTimer'
 import TimerDisplay from '../components/TimerDisplay.vue'
 import ModeSwitch from '../components/ModeSwitch.vue'
@@ -6,13 +7,22 @@ import ControlButtons from '../components/ControlButtons.vue'
 import StatsCard from '../components/StatsCard.vue'
 import TagSelector from '../components/timer/TagSelector.vue'
 import DailyGoal from '../components/timer/DailyGoal.vue'
-const { store, toggleTimer, resetTimer, switchMode } = useTimer()
+const { store, countdown, toggleTimer, resetTimer, switchMode } = useTimer()
+
+const nextModeLabel = computed(() => {
+  return store.mode === 'work' ? '休息' : '工作'
+})
+
+function cycleMod(count: number, interval: number): number {
+  const r = count % interval
+  return r === 0 ? (count > 0 ? interval : 0) : r
+}
 </script>
 
 <template>
   <div class="timer-view">
     <!-- 模式切换 -->
-    <ModeSwitch :mode="store.mode" @switch="switchMode" />
+    <ModeSwitch :mode="store.mode" :settings="store.settings" @switch="switchMode" />
 
     <!-- 计时器 -->
     <TimerDisplay
@@ -23,6 +33,12 @@ const { store, toggleTimer, resetTimer, switchMode } = useTimer()
 
     <!-- 控制按钮 -->
     <ControlButtons :is-running="store.isRunning" @toggle="toggleTimer" @reset="resetTimer" />
+
+    <!-- 自动切换倒计时 -->
+    <div v-if="countdown !== null" class="countdown-banner">
+      <span class="countdown-text">{{ countdown }} 秒后自动{{ nextModeLabel }}</span>
+      <button class="countdown-cancel" @click="resetTimer">取消</button>
+    </div>
 
     <!-- 标签选择器 -->
     <TagSelector
@@ -35,10 +51,10 @@ const { store, toggleTimer, resetTimer, switchMode } = useTimer()
     <div class="pomodoro-count">
       <div class="count-dots">
         <span
-          v-for="i in 4"
+          v-for="i in store.settings.longBreakInterval"
           :key="i"
           class="count-dot"
-          :class="{ filled: store.pomodoroCount % 4 >= i || (store.pomodoroCount % 4 === 0 && store.pomodoroCount > 0) }"
+          :class="{ filled: cycleMod(store.pomodoroCount, store.settings.longBreakInterval) >= i }"
         ></span>
       </div>
       <span class="count-text">
@@ -102,5 +118,44 @@ const { store, toggleTimer, resetTimer, switchMode } = useTimer()
   font-family: 'JetBrains Mono', monospace;
   font-weight: 500;
   color: var(--color-text);
+}
+
+/* 自动切换倒计时 */
+.countdown-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-primary);
+  border-radius: 12px;
+  animation: fadeInUp 0.3s ease;
+}
+
+.countdown-text {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.countdown-text strong {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--color-primary);
+}
+
+.countdown-cancel {
+  padding: 4px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-btn-bg);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.countdown-cancel:hover {
+  background: var(--color-btn-hover);
+  border-color: var(--color-border-strong);
 }
 </style>

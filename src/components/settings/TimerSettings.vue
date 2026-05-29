@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TimerSettings } from '../../types/timer'
 
-const props = defineProps<{ settings: TimerSettings }>()
+defineProps<{ settings: TimerSettings }>()
 const emit = defineEmits<{ update: [settings: Partial<TimerSettings>] }>()
 
 function updateField(field: keyof TimerSettings, value: number) {

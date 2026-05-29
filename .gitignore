@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Rust / Tauri 编译产物
+src-tauri/target/
+src-tauri/gen/
+
+# 开发工具生成的文档
+docs/superpowers/
+
+# 平台特定的便捷脚本
+start.bat
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

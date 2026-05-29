@@ -2,11 +2,15 @@
 import { ref } from 'vue'
 import Sidebar from './components/common/Sidebar.vue'
 
-const isDark = ref(false)
+const THEME_KEY = 'pomodoro-theme'
+
+const isDark = ref(localStorage.getItem(THEME_KEY) === 'dark')
+document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
 
 function toggleTheme() {
   isDark.value = !isDark.value
   document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
+  localStorage.setItem(THEME_KEY, isDark.value ? 'dark' : 'light')
 }
 </script>
 

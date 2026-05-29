@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import type { TimerMode } from '../types/timer'
+import { computed } from 'vue'
+import type { TimerMode, TimerSettings } from '../types/timer'
 
-defineProps<{ mode: TimerMode }>()
+const props = defineProps<{
+  mode: TimerMode
+  settings: TimerSettings
+}>()
 const emit = defineEmits<{ switch: [mode: TimerMode] }>()
 
-const modes: { key: TimerMode; label: string; desc: string }[] = [
-  { key: 'work', label: '工作', desc: '25分钟' },
-  { key: 'shortBreak', label: '小憩', desc: '5分钟' },
-  { key: 'longBreak', label: '长休', desc: '15分钟' },
-]
+const modes = computed(() => [
+  { key: 'work' as const, label: '工作', desc: `${props.settings.workDuration}分钟` },
+  { key: 'shortBreak' as const, label: '小憩', desc: `${props.settings.shortBreakDuration}分钟` },
+  { key: 'longBreak' as const, label: '长休', desc: `${props.settings.longBreakDuration}分钟` },
+])
 </script>
 
 <template>

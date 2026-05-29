@@ -14,13 +14,17 @@ export function useTimer() {
     startTimer()
   }
 
-  const { startCountdown, cancelCountdown } = useAutoSwitch(onAutoStart)
+  const { countdown, startCountdown, cancelCountdown } = useAutoSwitch(onAutoStart)
 
   function startTimer() {
     if (intervalId.value !== null) return
 
     cancelCountdown()
     store.start()
+
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission()
+    }
     intervalId.value = window.setInterval(() => {
       store.tick()
 
@@ -70,10 +74,12 @@ export function useTimer() {
     if (intervalId.value !== null) {
       clearInterval(intervalId.value)
     }
+    cancelCountdown()
   })
 
   return {
     store,
+    countdown,
     toggleTimer,
     resetTimer,
     switchMode,

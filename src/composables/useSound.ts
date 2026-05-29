@@ -3,30 +3,41 @@ import { useTimerStore } from '../stores/timer'
 
 const SOUND_FILES: Record<string, string> = {
   'default': '/sounds/notification.mp3',
-  'bird': '/sounds/bird.mp3',
-  'wind-chime': '/sounds/wind-chime.mp3',
-  'wooden-fish': '/sounds/wooden-fish.mp3',
-  'rain': '/sounds/rain.mp3',
-  'piano': '/sounds/piano.mp3',
-  'guitar': '/sounds/guitar.mp3',
-  'bell': '/sounds/bell.mp3',
 }
 
 export const SOUND_OPTIONS = [
   { id: 'default', name: '默认提示音' },
-  { id: 'bird', name: '鸟鸣' },
-  { id: 'wind-chime', name: '风铃' },
-  { id: 'wooden-fish', name: '木鱼' },
-  { id: 'rain', name: '雨声' },
-  { id: 'piano', name: '钢琴' },
-  { id: 'guitar', name: '吉他' },
-  { id: 'bell', name: '铃声' },
 ]
 
 export function useSound() {
   const store = useTimerStore()
   const isPlaying = ref(false)
   let currentAudio: HTMLAudioElement | null = null
+
+  function playFallbackBeep(volume: number) {
+    try {
+      const ctx = new AudioContext()
+      const gain = ctx.createGain()
+      gain.connect(ctx.destination)
+      gain.gain.value = volume * 0.3
+
+      const notes = [523, 659]
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator()
+        osc.type = 'sine'
+        osc.frequency.value = freq
+        osc.connect(gain)
+        osc.start(ctx.currentTime + i * 0.15)
+        osc.stop(ctx.currentTime + i * 0.15 + 0.12)
+        gain.gain.setValueAtTime(volume * 0.3, ctx.currentTime + i * 0.15)
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.12)
+      })
+
+      setTimeout(() => ctx.close(), 500)
+    } catch {
+      // Web Audio API unavailable
+    }
+  }
 
   function play(soundId?: string) {
     const id = soundId ?? store.settings.sound.notificationSound
@@ -43,6 +54,7 @@ export function useSound() {
 
       audio.play().catch(() => {
         isPlaying.value = false
+        playFallbackBeep(volume)
       })
 
       audio.addEventListener('ended', () => {
@@ -51,6 +63,7 @@ export function useSound() {
       })
     } catch {
       isPlaying.value = false
+      playFallbackBeep(volume)
     }
   }
 
