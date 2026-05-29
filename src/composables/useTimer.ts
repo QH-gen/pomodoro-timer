@@ -1,21 +1,40 @@
 import { ref, onUnmounted } from 'vue'
 import { useTimerStore } from '../stores/timer'
+import { useSound } from './useSound'
+import { useAutoSwitch } from './useAutoSwitch'
+import type { TimerMode } from '../types/timer'
 
 export function useTimer() {
   const store = useTimerStore()
   const intervalId = ref<number | null>(null)
+  const { play: playSound } = useSound()
+
+  function onAutoStart() {
+    store.completeCycle()
+    startTimer()
+  }
+
+  const { startCountdown, cancelCountdown } = useAutoSwitch(onAutoStart)
 
   function startTimer() {
     if (intervalId.value !== null) return
 
+    cancelCountdown()
     store.start()
     intervalId.value = window.setInterval(() => {
       store.tick()
 
       if (store.timeLeft <= 0) {
         stopTimer()
+        playSound()
+
+        if ('Notification' in window && Notification.permission === 'granted') {
+          const label = store.mode === 'work' ? '休息一下' : '开始工作'
+          new Notification('番茄钟', { body: label })
+        }
+
         store.completeCycle()
-        playNotification()
+        startCountdown()
       }
     }, 1000)
   }
@@ -26,6 +45,7 @@ export function useTimer() {
       intervalId.value = null
     }
     store.pause()
+    cancelCountdown()
   }
 
   function toggleTimer() {
@@ -41,17 +61,9 @@ export function useTimer() {
     store.reset()
   }
 
-  function playNotification() {
-    try {
-      const audio = new Audio('/sounds/notification.mp3')
-      audio.volume = 0.5
-      audio.play().catch(() => {})
-    } catch {}
-
-    if ('Notification' in window && Notification.permission === 'granted') {
-      const label = store.mode === 'work' ? '休息一下' : '开始工作'
-      new Notification('番茄钟', { body: label })
-    }
+  function switchMode(mode: TimerMode) {
+    if (store.isRunning) return
+    store.switchMode(mode)
   }
 
   onUnmounted(() => {
@@ -64,5 +76,6 @@ export function useTimer() {
     store,
     toggleTimer,
     resetTimer,
+    switchMode,
   }
 }

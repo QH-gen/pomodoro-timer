@@ -6,14 +6,7 @@ import ControlButtons from '../components/ControlButtons.vue'
 import StatsCard from '../components/StatsCard.vue'
 import TagSelector from '../components/timer/TagSelector.vue'
 import DailyGoal from '../components/timer/DailyGoal.vue'
-import type { TimerMode } from '../types/timer'
-
-const { store, toggleTimer, resetTimer } = useTimer()
-
-function switchMode(mode: TimerMode) {
-  if (store.isRunning) return
-  store.switchMode(mode)
-}
+const { store, toggleTimer, resetTimer, switchMode } = useTimer()
 </script>
 
 <template>
