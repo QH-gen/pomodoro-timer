@@ -1,52 +1,57 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useTimerStore } from '../../stores/timer'
+import TimeRangeSelector from './TimeRangeSelector.vue'
+import DailyBarChart from './DailyBarChart.vue'
+import TrendLineChart from './TrendLineChart.vue'
+import TagPieChart from './TagPieChart.vue'
+import ExportPanel from './ExportPanel.vue'
+
+const store = useTimerStore()
+const days = ref(7)
+
+const filteredRecords = computed(() => {
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - days.value)
+  const cutoffStr = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, '0')}-${String(cutoff.getDate()).padStart(2, '0')}`
+  return store.history.filter(r => r.date >= cutoffStr)
+})
 </script>
 
 <template>
   <div class="stats-page">
     <h2 class="page-title">统计分析</h2>
-    <div class="placeholder">
-      <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M18 20V10M12 20V4M6 20v-6" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-      <p class="placeholder-text">图表功能即将上线...</p>
+
+    <TimeRangeSelector v-model="days" />
+
+    <div class="charts-grid">
+      <DailyBarChart :records="filteredRecords" :days="days" />
+      <TrendLineChart :records="filteredRecords" :days="days" />
+      <TagPieChart :records="filteredRecords" :tags="store.tags" />
     </div>
+
+    <ExportPanel :records="store.history" :tags="store.tags" />
   </div>
 </template>
 
 <style scoped>
 .stats-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
+  padding-bottom: 40px;
 }
 
 .page-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.4rem;
-  font-weight: 400;
+  font-size: 1.2rem;
+  font-weight: 600;
   color: var(--color-text);
+  margin-bottom: 20px;
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.placeholder {
+.charts-grid {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 16px;
-  padding: 48px 24px;
-  background: var(--color-surface);
-  border-radius: 20px;
-  border: 1px dashed var(--color-border-strong);
-}
-
-.placeholder-icon {
-  width: 48px;
-  height: 48px;
-  color: var(--color-text-muted);
-}
-
-.placeholder-text {
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
+  margin-bottom: 16px;
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
 }
 </style>
