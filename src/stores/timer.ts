@@ -9,7 +9,8 @@ const DEFAULT_SETTINGS: TimerSettings = {
 }
 
 function getToday(): string {
-  return new Date().toISOString().split('T')[0]
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
 function generateId(): string {
@@ -36,7 +37,7 @@ export const useTimerStore = defineStore('timer', {
     },
 
     progress(state): number {
-      return 1 - state.timeLeft / this.totalTime
+      return Math.max(0, Math.min(1, 1 - state.timeLeft / this.totalTime))
     },
 
     todayRecord(state): HistoryRecord {
@@ -122,12 +123,17 @@ export const useTimerStore = defineStore('timer', {
       // 保留最近 30 天
       const cutoff = new Date()
       cutoff.setDate(cutoff.getDate() - 30)
-      const cutoffStr = cutoff.toISOString().split('T')[0]
+      const cutoffStr = `${cutoff.getFullYear()}-${String(cutoff.getMonth() + 1).padStart(2, '0')}-${String(cutoff.getDate()).padStart(2, '0')}`
       this.history = this.history.filter(r => r.date >= cutoffStr)
     },
 
     updateSettings(settings: Partial<TimerSettings>) {
-      Object.assign(this.settings, settings)
+      const validated = { ...settings }
+      if (validated.workDuration !== undefined) validated.workDuration = Math.max(1, validated.workDuration)
+      if (validated.shortBreakDuration !== undefined) validated.shortBreakDuration = Math.max(1, validated.shortBreakDuration)
+      if (validated.longBreakDuration !== undefined) validated.longBreakDuration = Math.max(1, validated.longBreakDuration)
+      if (validated.longBreakInterval !== undefined) validated.longBreakInterval = Math.max(2, validated.longBreakInterval)
+      Object.assign(this.settings, validated)
       if (!this.isRunning) {
         this.timeLeft = this.totalTime
       }
