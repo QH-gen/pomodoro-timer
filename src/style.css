@@ -1,44 +1,194 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap');
+
 :root {
-  --color-primary: #E57373;
-  --color-bg: #FAFAFA;
-  --color-card-bg: #FFFFFF;
-  --color-text: #333333;
-  --color-text-secondary: #888888;
-  --color-btn-bg: #F0F0F0;
-  --color-border: #E0E0E0;
-  --color-input-bg: #FFFFFF;
-  --color-ring-bg: #EEEEEE;
+  /* 陶土暖色调 */
+  --color-primary: #C4715C;
+  --color-primary-light: #E8A090;
+  --color-primary-dark: #8B4A3A;
+  --color-accent: #D4956B;
+
+  /* 背景 - 温暖的米色调 */
+  --color-bg: #F5EDE4;
+  --color-bg-warm: #EDE3D8;
+  --color-surface: #FAF6F1;
+  --color-card-bg: #FFFBF7;
+
+  /* 文字 */
+  --color-text: #3D2E24;
+  --color-text-secondary: #8B7B6E;
+  --color-text-muted: #B5A89E;
+
+  /* 边框与阴影 */
+  --color-border: rgba(139, 123, 110, 0.15);
+  --color-border-strong: rgba(139, 123, 110, 0.3);
+  --color-shadow: rgba(61, 46, 36, 0.08);
+  --color-shadow-md: rgba(61, 46, 36, 0.12);
+  --color-shadow-lg: rgba(61, 46, 36, 0.18);
+
+  /* 按钮 */
+  --color-btn-bg: #EDE3D8;
+  --color-btn-hover: #E5D9CC;
+
+  /* 输入 */
+  --color-input-bg: #FAF6F1;
+  --color-input-border: rgba(139, 123, 110, 0.25);
+
+  /* 计时器环 */
+  --color-ring-bg: rgba(139, 123, 110, 0.12);
+  --color-ring-track: rgba(139, 123, 110, 0.06);
+
+  /* 渐变 */
+  --gradient-primary: linear-gradient(135deg, #C4715C, #D4956B);
+  --gradient-bg: linear-gradient(180deg, #F5EDE4 0%, #EDE3D8 100%);
+
+  /* 纹理 */
+  --noise-opacity: 0.03;
+  --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
 [data-theme="dark"] {
-  --color-primary: #EF9A9A;
-  --color-bg: #1A1A2E;
-  --color-card-bg: #16213E;
-  --color-text: #E0E0E0;
-  --color-text-secondary: #999999;
-  --color-btn-bg: #0F3460;
-  --color-border: #333355;
-  --color-input-bg: #16213E;
-  --color-ring-bg: #222244;
+  /* 深色主题 - 深陶土 + 温暖的阴影 */
+  --color-primary: #D4956B;
+  --color-primary-light: #E8B090;
+  --color-primary-dark: #C4715C;
+  --color-accent: #E0A87C;
+
+  --color-bg: #1E1814;
+  --color-bg-warm: #251F1A;
+  --color-surface: #2A2320;
+  --color-card-bg: #322A25;
+
+  --color-text: #E8DDD4;
+  --color-text-secondary: #A89888;
+  --color-text-muted: #786858;
+
+  --color-border: rgba(168, 152, 136, 0.15);
+  --color-border-strong: rgba(168, 152, 136, 0.25);
+  --color-shadow: rgba(0, 0, 0, 0.2);
+  --color-shadow-md: rgba(0, 0, 0, 0.3);
+  --color-shadow-lg: rgba(0, 0, 0, 0.4);
+
+  --color-btn-bg: #3D3430;
+  --color-btn-hover: #4A403A;
+
+  --color-input-bg: #2A2320;
+  --color-input-border: rgba(168, 152, 136, 0.2);
+
+  --color-ring-bg: rgba(168, 152, 136, 0.15);
+  --color-ring-track: rgba(168, 152, 136, 0.08);
+
+  --gradient-primary: linear-gradient(135deg, #D4956B, #E0A87C);
+  --gradient-bg: linear-gradient(180deg, #1E1814 0%, #251F1A 100%);
+
+  --noise-opacity: 0.04;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* 全局重置 */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 背景纹理 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--paper-texture);
+  opacity: var(--noise-opacity);
+  pointer-events: none;
+  z-index: 1000;
+}
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--color-bg);
+  font-family: 'Instrument Sans', -apple-system, sans-serif;
+  background: var(--gradient-bg);
+  background-attachment: fixed;
   color: var(--color-text);
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* 主容器 */
 #app {
   width: 100%;
-  max-width: 360px;
-  padding: 32px 24px;
-  text-align: center;
+  min-height: 100vh;
 }
 
-button { font-family: inherit; }
+button {
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.9;
+  }
+}
+
+@keyframes gentlePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(196, 113, 92, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(196, 113, 92, 0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 3px;
+}
+
+/* 选择 */
+::selection {
+  background: var(--color-primary-light);
+  color: var(--color-text);
+}
