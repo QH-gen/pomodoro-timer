@@ -72,5 +72,4 @@ export interface TimerState {
   history: HistoryRecord[]
   tags: TaskTag[]
   currentTagId: string | null
-  autoSwitchCountdown: number | null
 }

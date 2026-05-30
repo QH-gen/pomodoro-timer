@@ -3,9 +3,6 @@ import { ref, computed } from 'vue'
 import { useTimerStore } from '../../stores/timer'
 import TimeRangeSelector from './TimeRangeSelector.vue'
 import DailyBarChart from './DailyBarChart.vue'
-import TrendLineChart from './TrendLineChart.vue'
-import TagPieChart from './TagPieChart.vue'
-import ExportPanel from './ExportPanel.vue'
 
 const store = useTimerStore()
 const days = ref(7)
@@ -26,11 +23,7 @@ const filteredRecords = computed(() => {
 
     <div class="charts-grid">
       <DailyBarChart :records="filteredRecords" :days="days" />
-      <TrendLineChart :records="filteredRecords" :days="days" />
-      <TagPieChart :records="filteredRecords" :tags="store.tags" />
     </div>
-
-    <ExportPanel :records="store.history" :tags="store.tags" />
   </div>
 </template>
 

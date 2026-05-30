@@ -12,7 +12,6 @@ export function useAutoSwitch(onAutoStart: () => void) {
       countdownTimer = null
     }
     countdown.value = null
-    store.setAutoSwitchCountdown(null)
   }
 
   function startCountdown() {
@@ -25,12 +24,10 @@ export function useAutoSwitch(onAutoStart: () => void) {
 
     clearCountdown()
     countdown.value = settings.countdownSeconds
-    store.setAutoSwitchCountdown(settings.countdownSeconds)
 
     countdownTimer = window.setInterval(() => {
       if (countdown.value !== null && countdown.value > 0) {
         countdown.value--
-        store.setAutoSwitchCountdown(countdown.value)
       } else {
         clearCountdown()
         onAutoStart()

@@ -64,7 +64,6 @@ export const useTimerStore = defineStore('timer', {
     history: [],
     tags: [...DEFAULT_TAGS],
     currentTagId: null,
-    autoSwitchCountdown: null,
   }),
 
   getters: {
@@ -241,10 +240,6 @@ export const useTimerStore = defineStore('timer', {
           this.currentTagId = null
         }
       }
-    },
-
-    setAutoSwitchCountdown(seconds: number | null) {
-      this.autoSwitchCountdown = seconds
     },
   },
 
